@@ -7,10 +7,12 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
+use App\Component\User\FullNameDto;
 use App\Controller\UserCreateAction;
+use App\Controller\UserFullNameAction;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -21,14 +23,20 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Post(
             uriTemplate: "/users",
             controller: UserCreateAction::class,
-            name: 'userCreate'
+            name: 'userCreate',
+        ),
+        new Post(
+            uriTemplate: "/users/full-name",
+            controller: UserFullNameAction::class,
+            input: FullNameDto::class,
+            name: 'fullName'
         ),
         new Delete(),
     ],
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:write']]
 )]
-class User
+class User implements PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

@@ -5,19 +5,22 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Component\User\UserFactory;
+use App\Component\User\UserManager;
 use App\Entity\User;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
 #[AsController]
 class UserCreateAction
 {
-    public function __construct(private UserFactory $userFactory)
+    public function __construct(private UserFactory $userFactory, private UserManager $userManager)
     {
     }
 
-    public function __invoke(User $data)
+    public function __invoke(User $data): User
     {
-        $this->userFactory->create($data->getEmail(), $data->getPassword());
-        exit;
+        $user = $this->userFactory->create($data->getEmail(), $data->getPassword());
+        $this->userManager->save($user, true);
+
+        return $user;
     }
 }

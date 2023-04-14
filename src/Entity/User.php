@@ -8,8 +8,10 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Component\User\FullNameDto;
+use App\Component\User\MaxAgeDto;
 use App\Controller\UserCreateAction;
 use App\Controller\UserFullNameAction;
+use App\Controller\UserGetMaxAgeAction;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -21,8 +23,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
     operations: [
         new Get(),
         new GetCollection(),
+        new GetCollection(
+            uriTemplate: "/users/max-age",
+            controller: UserGetMaxAgeAction::class,
+        ),
         new Post(
-            uriTemplate: "/users/my",
+            uriTemplate: "/users",
             controller: UserCreateAction::class,
             name: 'userCreate',
         ),
@@ -57,22 +63,9 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
     #[Groups(['user:write'])]
     private ?string $password = null;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): self
-    {
-        $this->email = $email;
-
-        return $this;
-    }
+    #[ORM\Column(nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
+    private ?int $age = null;
 
     public function getPassword(): ?string
     {
@@ -101,8 +94,37 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
         return (string)$this->getId();
     }
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
     public function getUsername(): string
     {
         return $this->getEmail();
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getAge(): ?int
+    {
+        return $this->age;
+    }
+
+    public function setAge(?int $age): self
+    {
+        $this->age = $age;
+
+        return $this;
     }
 }

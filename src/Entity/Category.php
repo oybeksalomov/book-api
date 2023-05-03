@@ -11,7 +11,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ApiResource(
-    normalizationContext: ['groups' => ['category:read']],
+    normalizationContext: ['groups' => ['category:read', 'book:read']],
     denormalizationContext: ['groups' => ['category:write']]
 )]
 class Category
@@ -23,7 +23,7 @@ class Category
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['category:read', 'category:write'])]
+    #[Groups(['category:read', 'book:read', 'category:write'])]
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Book::class)]

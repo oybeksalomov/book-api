@@ -8,9 +8,9 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Component\User\FullNameDto;
-use App\Component\User\MaxAgeDto;
 use App\Controller\UserCreateAction;
 use App\Controller\UserFullNameAction;
+use App\Controller\UserGetAdultsAction;
 use App\Controller\UserGetMaxAgeAction;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -21,11 +21,16 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
     operations: [
-        new Get(),
+
         new GetCollection(),
         new GetCollection(
             uriTemplate: "/users/max-age",
             controller: UserGetMaxAgeAction::class,
+        ),
+        new GetCollection(
+            uriTemplate: "/users/adults",
+            controller: UserGetAdultsAction::class,
+            name: "adults"
         ),
         new Post(
             uriTemplate: "/users",
@@ -42,6 +47,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             uriTemplate: "/users/auth",
             name: 'auth'
         ),
+        new Get(),
         new Delete(),
     ],
     normalizationContext: ['groups' => ['user:read']],
